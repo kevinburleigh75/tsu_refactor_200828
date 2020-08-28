@@ -39,33 +39,28 @@ class Game:
     def how_many_players(self):
         return len(self.players)
 
+    def _advance_player_and_ask_question(self, roll):
+        self.places[self.current_player] = (self.places[self.current_player] + roll) % 12
+        print(self.players[self.current_player] + \
+                    '\'s new location is ' + \
+                    str(self.places[self.current_player]))
+        print("The category is %s" % self._current_category)
+        self._ask_question()
+
     def roll(self, roll):
         print("%s is the current player" % self.players[self.current_player])
         print("They have rolled a %s" % roll)
 
         if self.in_penalty_box[self.current_player]:
-            if roll % 2 != 0:
-                self.is_getting_out_of_penalty_box = True
-
+            roll_is_odd = (roll % 2 != 0)
+            self.is_getting_out_of_penalty_box = roll_is_odd
+            if self.is_getting_out_of_penalty_box:
                 print("%s is getting out of the penalty box" % self.players[self.current_player])
-                self.places[self.current_player] = (self.places[self.current_player] + roll) % 12
-
-                print(self.players[self.current_player] + \
-                            '\'s new location is ' + \
-                            str(self.places[self.current_player]))
-                print("The category is %s" % self._current_category)
-                self._ask_question()
+                self._advance_player_and_ask_question(roll)
             else:
                 print("%s is not getting out of the penalty box" % self.players[self.current_player])
-                self.is_getting_out_of_penalty_box = False
         else:
-            self.places[self.current_player] = (self.places[self.current_player] + roll) % 12
-
-            print(self.players[self.current_player] + \
-                        '\'s new location is ' + \
-                        str(self.places[self.current_player]))
-            print("The category is %s" % self._current_category)
-            self._ask_question()
+            self._advance_player_and_ask_question(roll)
 
     def _ask_question(self):
         if self._current_category == 'Pop':     print(self.pop_questions.pop(0))
@@ -92,34 +87,29 @@ class Game:
         self.current_player += 1
         if self.current_player == len(self.players): self.current_player = 0
 
+
+    def _add_coin_to_purse(self, misspell):
+        if misspell:
+            print('Answer was corrent!!!!')
+        else:
+            print('Answer was correct!!!!')
+
+        self.purses[self.current_player] += 1
+        print(self.players[self.current_player] + \
+            ' now has ' + \
+            str(self.purses[self.current_player]) + \
+            ' Gold Coins.')
+
     def was_correctly_answered(self):
         if self.in_penalty_box[self.current_player]:
             if self.is_getting_out_of_penalty_box:
-                print('Answer was correct!!!!')
-                self.purses[self.current_player] += 1
-                print(self.players[self.current_player] + \
-                    ' now has ' + \
-                    str(self.purses[self.current_player]) + \
-                    ' Gold Coins.')
-
-                game_should_continue = not self._did_player_win()
-                self._advance_to_next_player()
-                return game_should_continue
-            else:
-                game_should_continue = True
-                self._advance_to_next_player()
-                return game_should_continue
+                self._add_coin_to_purse(misspell=False)
         else:
-            print("Answer was corrent!!!!")
-            self.purses[self.current_player] += 1
-            print(self.players[self.current_player] + \
-                ' now has ' + \
-                str(self.purses[self.current_player]) + \
-                ' Gold Coins.')
+            self._add_coin_to_purse(misspell=True)
 
-            game_should_continue = not self._did_player_win()
-            self._advance_to_next_player()
-            return game_should_continue
+        game_should_continue = not self._did_player_win()
+        self._advance_to_next_player()
+        return game_should_continue
 
     def wrong_answer(self):
         print('Question was incorrectly answered')
