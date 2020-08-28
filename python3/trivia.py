@@ -146,6 +146,14 @@ class Game:
 from random import randrange
 
 if __name__ == '__main__':
+    ####################################
+    ## Isolate random number generator.
+    import sys
+    from random import seed
+    if len(sys.argv) == 2:
+        seed(int(sys.argv[1]))
+    ####################################
+
     not_a_winner = False
 
     game = Game()
