@@ -56,7 +56,7 @@ class Game:
             self.is_getting_out_of_penalty_box = roll_is_odd
             if self.is_getting_out_of_penalty_box:
                 print("%s is getting out of the penalty box" % self.players[self.current_player])
-                # self.in_penalty_box[self.current_player] = False
+                self.in_penalty_box[self.current_player] = False
                 self._advance_player_and_ask_question(roll)
             else:
                 print("%s is not getting out of the penalty box" % self.players[self.current_player])
