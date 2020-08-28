@@ -14,7 +14,6 @@ class Game:
 
         self.current_player = 0
         self.is_getting_out_of_penalty_box = False
-        self.use_misspell = True
 
         for i in range(50):
             self.pop_questions.append("Pop Question %s" % i)
@@ -55,7 +54,6 @@ class Game:
         if self.in_penalty_box[self.current_player]:
             roll_is_odd = (roll % 2 != 0)
             self.is_getting_out_of_penalty_box = roll_is_odd
-            self.use_misspell = False
             if self.is_getting_out_of_penalty_box:
                 print("%s is getting out of the penalty box" % self.players[self.current_player])
                 # self.in_penalty_box[self.current_player] = False
@@ -63,12 +61,11 @@ class Game:
             else:
                 print("%s is not getting out of the penalty box" % self.players[self.current_player])
         else:
-            self.use_misspell = True
             self._advance_player_and_ask_question(roll)
 
     def was_correctly_answered(self):
         if not (self.in_penalty_box[self.current_player] and not self.is_getting_out_of_penalty_box):
-            self._add_coin_to_purse(misspell=self.use_misspell)
+            self._add_coin_to_purse()
 
         game_should_continue = not self._did_player_win()
         self._advance_to_next_player()
@@ -100,11 +97,8 @@ class Game:
         if self.current_player == len(self.players): self.current_player = 0
 
 
-    def _add_coin_to_purse(self, misspell):
-        if misspell:
-            print('Answer was corrent!!!!')
-        else:
-            print('Answer was correct!!!!')
+    def _add_coin_to_purse(self):
+        print('Answer was correct!!!!')
 
         self.purses[self.current_player] += 1
         print(self.players[self.current_player] + \
