@@ -14,6 +14,7 @@ class Game:
 
         self.current_player = 0
         self.is_getting_out_of_penalty_box = False
+        self.use_misspell = True
 
         for i in range(50):
             self.pop_questions.append("Pop Question %s" % i)
@@ -54,13 +55,24 @@ class Game:
         if self.in_penalty_box[self.current_player]:
             roll_is_odd = (roll % 2 != 0)
             self.is_getting_out_of_penalty_box = roll_is_odd
+            self.use_misspell = False
             if self.is_getting_out_of_penalty_box:
                 print("%s is getting out of the penalty box" % self.players[self.current_player])
+                # self.in_penalty_box[self.current_player] = False
                 self._advance_player_and_ask_question(roll)
             else:
                 print("%s is not getting out of the penalty box" % self.players[self.current_player])
         else:
+            self.use_misspell = True
             self._advance_player_and_ask_question(roll)
+
+    def was_correctly_answered(self):
+        if not (self.in_penalty_box[self.current_player] and not self.is_getting_out_of_penalty_box):
+            self._add_coin_to_purse(misspell=self.use_misspell)
+
+        game_should_continue = not self._did_player_win()
+        self._advance_to_next_player()
+        return game_should_continue
 
     def _ask_question(self):
         if self._current_category == 'Pop':     print(self.pop_questions.pop(0))
@@ -99,17 +111,6 @@ class Game:
             ' now has ' + \
             str(self.purses[self.current_player]) + \
             ' Gold Coins.')
-
-    def was_correctly_answered(self):
-        if self.in_penalty_box[self.current_player]:
-            if self.is_getting_out_of_penalty_box:
-                self._add_coin_to_purse(misspell=False)
-        else:
-            self._add_coin_to_purse(misspell=True)
-
-        game_should_continue = not self._did_player_win()
-        self._advance_to_next_player()
-        return game_should_continue
 
     def wrong_answer(self):
         print('Question was incorrectly answered')
